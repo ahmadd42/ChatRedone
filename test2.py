@@ -1,12 +1,14 @@
-from fastapi import FastAPI
+from typing import Annotated
+from fastapi import FastAPI, Body
 from pydantic import BaseModel
 
 
 class NewUser(BaseModel):
-    name: str
-    phone: str
-    id: str
-    pswd: str
+    fname: Annotated[str, Body(pattern="^[A-Za-z]*$")]
+    lname: Annotated[str, Body(pattern="^[A-Za-z]*$")]
+    phone: Annotated[str, Body(min_length=10, max_length=14, pattern="^\+[0-9]*$")]
+    id: Annotated[str, Body(max_length=20, pattern="^[A-Za-z0-9_-]*$")]
+    pswd: Annotated[str, Body(min_length=8)]
 
 class Credentials(BaseModel):
     uname: str
@@ -15,12 +17,12 @@ class Credentials(BaseModel):
 app = FastAPI()
 
 #To keep it simple, this nested list is used instead of a database. It simulates a database table having
-#the columns "Name", "Phone No.", "Username" and "Password" in this order
+#the columns "First Name", "Last Name", "Phone No.", "Username" and "Password" in this order
 
-users = [["Ahmad Rasheed","03336532705","ahmadd42","askari@111"], ["Dawood Siddiq","03045013064","dawood123",\
-        "Daood"], ["Ashar Rasheed","03019237010","ashar2345","Dogar@123"],["Rifat Riaz","03336581945",\
-        "drrifatriaz","Drrifat"],["Faisal Ishaq","03346565337","faisal.rana","askari@999"],\
-        ["Maryam Ahmad","03336547896","maryam.ahmad","mano@050719"]]
+users = [["Ahmad","Rasheed","03336532705","ahmadd42","askari@111"], ["Dawood","Siddiq","03045013064","dawood123",\
+        "Daood"], ["Ashar","Rasheed","03019237010","ashar2345","Dogar@123"],["Rifat","Riaz","03336581945",\
+        "drrifatriaz","Drrifat"],["Faisal","Ishaq","03346565337","faisal.rana","askari@999"],\
+        ["Maryam","Ahmad","03336547896","maryam.ahmad","mano@050719"]]
 
 LoggedInUsers = []
 
@@ -34,7 +36,7 @@ def searchUser(usname):
 async def login(cr: Credentials):
     ind = searchUser(cr.uname) 
     if ind > -1:
-        if users[ind][3] != cr.pwd:
+        if users[ind][4] != cr.pwd:
             return {"msg":"Incorrect Pasword"}
         elif cr.uname in LoggedInUsers:
             return {"msg":"User already logged in"}
@@ -46,15 +48,6 @@ async def login(cr: Credentials):
     
 @app.post("/signup/")
 async def register(nu: NewUser):
-    name2 = nu.name.replace(" ","")
-
-    if not name2.isalpha():
-        return {"msg":"Invalid value for name"}
-    elif not (nu.phone.isdigit() and len(nu.phone) >= 11 and len(nu.phone) <= 14):
-        return {"msg":"Phone no should have 11 to 14 digits"}
-    elif len(nu.pswd) < 8:
-        return {"msg":"Password should have minimum 8 characters"}
-    else:
-        nuser = [nu.name, nu.phone, nu.id, nu.pswd]
-        users.append(nuser)
-        return {"msg":"User registered successfully"}
+    nuser = [nu.fname, nu.lname, nu.phone, nu.id, nu.pswd]
+    users.append(nuser)
+    return {"msg":"User registered successfully"}
