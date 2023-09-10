@@ -1,0 +1,8 @@
+ID			PASSWORD
+--			--------
+ahmadd42		askari@111
+dawood123		Daood
+ashar2345		Dogar@123
+drrifatriaz		Drrifat
+faisal.rana		askari@999
+maryam.ahmad		mano@050719
