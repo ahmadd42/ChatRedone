@@ -45,6 +45,11 @@ app = FastAPI()
 manager = ConnectionManager()
 
 templates = Jinja2Templates(directory='templates')
+
+#"sample" is the name of the project folder. "test2.py" file is at its root (e.g. E:\sample\test2.py), while 
+# html pages are in the "templates" subfolder (e.g. E:\sample\templates), and static files such as style sheets 
+# and images etc. are in the "static" subfolder (e.g. E:\sample\static). These paths can be changed accordingly
+
 app.mount(
     "/static",
     StaticFiles(directory=Path(__file__).parent.parent.absolute() / "sample/static"),
@@ -113,9 +118,9 @@ async def login(cr: Credentials, response: Response):
     if ind > -1:
         if users[ind][4] != cr.psw:
             return {"msg":"Incorrect Pasword"}
+        elif ind2 > -1:
+            return {"msg":"You have already logged in"}
         else:
-            if ind2 > -1:
-                LoggedInUsers.remove(ind2)
         ########  Generate Login token
             sess = cr.uname[0:3] + str(random.randint(1001,999999))
         ###############################
@@ -161,4 +166,5 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
             data = await websocket.receive_text()
             await manager.broadcast(data)
     except WebSocketDisconnect:
+        manager.disconnect(websocket)
         await manager.broadcast(user_id + " has left the room")
