@@ -52,7 +52,7 @@ templates = Jinja2Templates(directory='templates')
 
 app.mount(
     "/static",
-    StaticFiles(directory=Path(__file__).parent.parent.absolute() / "sample/static"),
+    StaticFiles(directory=Path(__file__).parent.parent.absolute() / "static"),
     name="static",
 )
 
@@ -166,5 +166,9 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
             data = await websocket.receive_text()
             await manager.broadcast(data)
     except WebSocketDisconnect:
+<<<<<<< HEAD
         manager.disconnect(websocket)
         await manager.broadcast(user_id + " has left the room")
+=======
+        await manager.broadcast(user_id + " has left the room")
+>>>>>>> 7bf041b79a154d7d33c774e4f5ccbc0067db75a6
