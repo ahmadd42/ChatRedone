@@ -163,6 +163,11 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
     await manager.broadcast(user_id + " has joined the room")
     try:
         while True:
+            if alreadyLoggedIn(user_id) == -1:
+                await websocket.close()
+                manager.disconnect(websocket)
+                await manager.broadcast(user_id + " has left the room")
+                break                
             data = await websocket.receive_text()
             await manager.broadcast(data)
     except WebSocketDisconnect:

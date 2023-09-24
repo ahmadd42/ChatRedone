@@ -74,6 +74,11 @@ document.getElementById("greeting").innerHTML = "<b>Welcome " + readCookie("myus
         $( 'div.message_holder' ).append( '<div>' + event.data + '</div>' )
     };
 
+    ws.onclose = function(event) {
+      document.getElementById("greeting").innerHTML = "<b>You have signed out of the system</b>"
+      document.getElementById("Sbm").disabled = true
+    };
+
     function sendMessage(event) {
         var input = document.getElementById("IM")
         ws.send(usname + " says: " + input.value)
